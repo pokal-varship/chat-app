@@ -16,7 +16,7 @@ const PORT = process.env.PORT;
 const __dirname = path.resolve();
 
 app.use(
-  cors({origin: ["http://localhost:5173", "https://callchat.netlify.app"],
+  cors({origin: ["http://localhost:5173", "https://chat-app-79n0.onrender.com"],
     credentials: true, // allow frontend to send cookies
   })
 );
