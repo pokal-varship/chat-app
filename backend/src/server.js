@@ -15,11 +15,11 @@ const PORT = process.env.PORT;
 
 const __dirname = path.resolve();
 
-// app.use(
-//   cors({origin: "https://chat-app-79n0.onrender.com",
-//     credentials: true, // allow frontend to send cookies
-//   })
-// );
+app.use(
+  cors({origin: true,
+    credentials: true, // allow frontend to send cookies
+  })
+);
 
 app.use(express.json());
 app.use(cookieParser());
