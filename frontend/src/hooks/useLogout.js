@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { logout } from "../lib/api";
+import { removeStoredToken } from "../lib/utils";
 
 const useLogout = () => {
   const queryClient = useQueryClient();
@@ -10,7 +11,11 @@ const useLogout = () => {
     error,
   } = useMutation({
     mutationFn: logout,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["authUser"] }),
+    onSuccess: () => {
+      // Clear the token from localStorage
+      removeStoredToken();
+      queryClient.invalidateQueries({ queryKey: ["authUser"] });
+    },
   });
 
   return { logoutMutation, isPending, error };

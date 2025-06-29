@@ -50,15 +50,15 @@ export async function signup(req, res) {
       expiresIn: "7d",
     });
 
-    res.cookie("jwt", token, {
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      httpOnly: true, // prevent XSS attacks
-      sameSite: "none", // allow cross-site cookies
-      secure: true, // required for sameSite: "none"
-      domain: process.env.NODE_ENV === "production" ? ".onrender.com" : undefined,
-    });
+    // res.cookie("jwt", token, {
+    //   maxAge: 7 * 24 * 60 * 60 * 1000,
+    //   httpOnly: true, // prevent XSS attacks
+    //   sameSite: "none", // allow cross-site cookies
+    //   secure: true, // required for sameSite: "none"
+    //   domain: process.env.NODE_ENV === "production" ? ".onrender.com" : undefined,
+    // });
 
-    res.status(201).json({ success: true, user: newUser });
+    res.status(201).json({ success: true, user:{...newUser.toJSON(), token}  });
   } catch (error) {
     console.log("Error in signup controller", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -83,15 +83,15 @@ export async function login(req, res) {
       expiresIn: "7d",
     });
 
-    res.cookie("jwt", token, {
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      httpOnly: true, // prevent XSS attacks
-      sameSite: "none", // allow cross-site cookies
-      secure: true, // required for sameSite: "none"
-      domain: process.env.NODE_ENV === "production" ? ".onrender.com" : undefined,
-    });
-
-    res.status(200).json({ success: true, user });
+    // res.cookie("jwt", token, {
+    //   maxAge: 7 * 24 * 60 * 60 * 1000,
+    //   httpOnly: true, // prevent XSS attacks
+    //   sameSite: "none", // allow cross-site cookies
+    //   secure: true, // required for sameSite: "none"
+    //   domain: process.env.NODE_ENV === "production" ? ".onrender.com" : undefined,
+    // });
+// console.log("User logged in successfully:", user);
+    res.status(200).json({ success: true, user: {...user.toJSON(), token} });
   } catch (error) {
     console.log("Error in login controller", error.message);
     res.status(500).json({ message: "Internal Server Error" });
@@ -99,12 +99,12 @@ export async function login(req, res) {
 }
 
 export function logout(req, res) {
-  res.clearCookie("jwt", {
-    httpOnly: true,
-    sameSite: "none",
-    secure: true,
-    domain: process.env.NODE_ENV === "production" ? ".onrender.com" : undefined,
-  });
+  // res.clearCookie("jwt", {
+  //   httpOnly: true,
+  //   sameSite: "none",
+  //   secure: true,
+  //   domain: process.env.NODE_ENV === "production" ? ".onrender.com" : undefined,
+  // });
   res.status(200).json({ success: true, message: "Logout successful" });
 }
 
