@@ -15,9 +15,15 @@ const PORT = process.env.PORT;
 
 const __dirname = path.resolve();
 
+// CORS configuration for cookie handling
 app.use(
-  cors({origin: true,
+  cors({
+    origin: process.env.NODE_ENV === "production" 
+      ? "https://chat-app-79n0.onrender.com" 
+      : ["http://localhost:5173", "http://localhost:3000"],
     credentials: true, // allow frontend to send cookies
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
