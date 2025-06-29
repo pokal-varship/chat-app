@@ -1,7 +1,7 @@
 import { upsertStreamUser } from "../lib/stream.js";
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
-
+const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY || "your_jwt_secret"
 export async function signup(req, res) {
   const { email, password, fullName } = req.body;
 
@@ -46,15 +46,16 @@ export async function signup(req, res) {
       console.log("Error creating Stream user:", error);
     }
 
-    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET_KEY || "your_jwt_secret", {
+    const token = jwt.sign({ userId: newUser._id }, JWT_SECRET_KEY || "your_jwt_secret", {
       expiresIn: "7d",
     });
 
     res.cookie("jwt", token, {
       maxAge: 7 * 24 * 60 * 60 * 1000,
-      httpOnly: true, // prevent XSS attacks,
-      sameSite: "strict", // prevent CSRF attacks
-      // secure: process.env.NODE_ENV === "production",
+      httpOnly: true, // prevent XSS attacks
+      sameSite: "none", // allow cross-site cookies
+      secure: true, // required for sameSite: "none"
+      domain: process.env.NODE_ENV === "production" ? ".onrender.com" : undefined,
     });
 
     res.status(201).json({ success: true, user: newUser });
@@ -78,15 +79,16 @@ export async function login(req, res) {
     const isPasswordCorrect = await user.matchPassword(password);
     if (!isPasswordCorrect) return res.status(401).json({ message: "Invalid email or password" });
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, {
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET_KEY, {
       expiresIn: "7d",
     });
 
     res.cookie("jwt", token, {
       maxAge: 7 * 24 * 60 * 60 * 1000,
-      httpOnly: true, // prevent XSS attacks,
-      sameSite: "strict", // prevent CSRF attacks
-      // secure: process.env.NODE_ENV === "production",
+      httpOnly: true, // prevent XSS attacks
+      sameSite: "none", // allow cross-site cookies
+      secure: true, // required for sameSite: "none"
+      domain: process.env.NODE_ENV === "production" ? ".onrender.com" : undefined,
     });
 
     res.status(200).json({ success: true, user });
@@ -97,7 +99,12 @@ export async function login(req, res) {
 }
 
 export function logout(req, res) {
-  res.clearCookie("jwt");
+  res.clearCookie("jwt", {
+    httpOnly: true,
+    sameSite: "none",
+    secure: true,
+    domain: process.env.NODE_ENV === "production" ? ".onrender.com" : undefined,
+  });
   res.status(200).json({ success: true, message: "Logout successful" });
 }
 
